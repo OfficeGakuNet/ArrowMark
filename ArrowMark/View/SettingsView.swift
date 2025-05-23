@@ -32,15 +32,18 @@ struct SettingsView: View {
                     Menu {
                         Button("FireStoreへアップロード",  action: uploadAllToFirebase)
                         Button("FireStoreからダウンロード", action: downloadAllFromFirebase)
+                        Divider()
+                        //  👇 追加
+                        Button(
+                            role: .destructive,
+                            action: { SettingsInitializer.resetSettingsData(context: viewContext) }
+                        ) {
+                            Label("ローカル初期化", systemImage: "arrow.counterclockwise")
+                        }
                     } label: {
                         Label("同期", systemImage: "arrow.triangle.2.circlepath")
                     }
                 }
-            }
-            .alert("同期結果", isPresented: $showSyncAlert) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(syncMessage)
             }
         }
     }
