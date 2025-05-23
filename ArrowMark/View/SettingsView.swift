@@ -12,7 +12,7 @@ struct SettingsView: View {
     @FetchRequest(
         entity: SettingItemEntity.entity(),
         sortDescriptors: [NSSortDescriptor(keyPath: \SettingItemEntity.masterID, ascending: true)],
-        predicate: NSPredicate(format: "no == 0")
+        predicate: NSPredicate(format: "no == 0")    // ← かならず 0 だけ
     ) private var headers: FetchedResults<SettingItemEntity>
 
     var body: some View {
@@ -34,10 +34,13 @@ struct SettingsView: View {
                         Button("FireStoreからダウンロード", action: downloadAllFromFirebase)
                         Divider()
                         //  👇 追加
-                        Button(
-                            role: .destructive,
-                            action: { SettingsInitializer.resetSettingsData(context: viewContext) }
-                        ) {
+                        Button(role: .destructive) {
+                            SettingsInitializer.resetSettingsData(context: viewContext)
+                            //  ⭐️ 明示的にアニメーション付きで再フェッチ
+                            withAnimation {
+                                try? viewContext.save()
+                            }
+                        } label: {
                             Label("ローカル初期化", systemImage: "arrow.counterclockwise")
                         }
                     } label: {
